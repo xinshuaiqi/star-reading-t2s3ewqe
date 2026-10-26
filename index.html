@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="STAR Reading">
+<title>STAR Reading Ladder</title>
+<style>
+:root{
+  --bg:#0b1020; --panel:#151c33; --panel2:#1e2745; --line:#2c3a66;
+  --text:#eef2ff; --muted:#9aa7d1; --blue:#4f8cff; --green:#34d399;
+  --red:#f87171; --gold:#fbbf24; --purple:#a78bfa;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Rounded","PingFang SC","Helvetica Neue",Arial,sans-serif;
+  font-size:18px;line-height:1.5;min-height:100vh;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#app{max-width:860px;margin:0 auto;padding:16px 18px 40px}
+button{font:inherit;color:inherit;border:0;cursor:pointer;touch-action:manipulation}
+h1,h2,h3{margin:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.top h1{font-size:26px}
+.sub{color:var(--muted);font-size:14px}
+.iconbtn{background:var(--panel2);border:1px solid var(--line);border-radius:14px;min-width:48px;min-height:48px;padding:0 14px;font-size:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px}
+.rank{border-radius:22px;padding:20px;margin-bottom:16px;color:#fff;position:relative;overflow:hidden}
+.rank .big{font-size:30px;font-weight:800}
+.rank .badge{font-size:54px;line-height:1}
+.bar{height:14px;background:rgba(0,0,0,.3);border-radius:99px;overflow:hidden;margin-top:10px}
+.bar>i{display:block;height:100%;background:rgba(255,255,255,.75);border-radius:99px;transition:width .8s}
+.row{display:flex;align-items:center;gap:12px}
+.grow{flex:1;min-width:0}
+.cat{width:100%;text-align:left;border-radius:20px;padding:18px;margin-bottom:12px;color:#fff;min-height:84px;display:flex;align-items:center;gap:14px}
+.cat .em{font-size:38px}
+.cat .t{font-weight:800;font-size:20px}
+.cat .z{opacity:.85;font-size:15px}
+.cat .n{margin-left:auto;text-align:right;font-weight:700}
+.story{width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;display:flex;gap:14px;align-items:center;min-height:84px}
+.story.done{border-color:rgba(52,211,153,.5)}
+.story .em{font-size:36px}
+.story .t{font-weight:700;font-size:19px}
+.pill{display:inline-block;font-size:13px;font-weight:700;padding:2px 10px;border-radius:99px;margin-right:6px}
+.easy{background:#064e3b;color:#6ee7b7}.medium{background:#78350f;color:#fcd34d}.hard{background:#7f1d1d;color:#fca5a5}
+.pill.g{background:var(--panel2);color:var(--muted)}
+.back{background:none;color:var(--muted);padding:10px 0;font-size:17px;min-height:44px}
+.passage{background:#fffdf7;color:#1f2937;border-radius:20px;padding:22px 24px;margin-bottom:16px;line-height:1.85}
+.passage p{margin:0 0 16px}
+.passage p:last-child{margin:0}
+.passage .stz{background:#fef3c7;border-left:5px solid #f59e0b;padding:8px 12px;border-radius:8px;font-weight:700}
+.big-btn{width:100%;padding:18px;border-radius:18px;font-size:20px;font-weight:800;color:#fff;background:var(--blue);min-height:60px;margin-top:6px}
+.big-btn.sec{background:var(--panel2);border:1px solid var(--line);font-weight:700}
+.big-btn.green{background:#059669}
+.stickybar{position:sticky;bottom:0;padding:12px 0 6px;background:linear-gradient(transparent,var(--bg) 35%)}
+.qbox{font-size:21px;font-weight:700;line-height:1.45}
+.opt{width:100%;text-align:left;background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:16px;margin-top:12px;display:flex;gap:14px;align-items:center;min-height:68px;font-size:19px;font-weight:600}
+.opt .L{width:40px;height:40px;border-radius:12px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+.opt.ok{background:#065f46;border-color:#34d399}.opt.ok .L{background:#10b981}
+.opt.bad{background:#7f1d1d;border-color:#f87171}.opt.bad .L{background:#ef4444}
+.opt.dim{opacity:.45}
+.prog{height:10px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:8px 0 16px}
+.prog>i{display:block;height:100%;background:var(--blue);transition:width .4s}
+.fb{margin-top:14px;padding:14px 16px;border-radius:16px;font-weight:700}
+.fb.ok{background:rgba(52,211,153,.15);color:#6ee7b7}.fb.bad{background:rgba(248,113,113,.15);color:#fca5a5}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
+.stat b{display:block;font-size:28px}
+.hist{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center}
+.delta.up{color:var(--green);font-weight:800}.delta.dn{color:var(--red);font-weight:800}
+.center{text-align:center}
+.pop{animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+textarea{width:100%;min-height:120px;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px;font-size:14px;font-family:ui-monospace,Menlo,monospace}
+input.name{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:18px;width:100%}
+.league-bronze{background:linear-gradient(135deg,#b4692a,#6b3a14)}
+.league-silver{background:linear-gradient(135deg,#aab3c0,#5f6b7a)}
+.league-gold{background:linear-gradient(135deg,#f5c542,#c27a0a)}
+.league-platinum{background:linear-gradient(135deg,#5eead4,#0e7490)}
+.league-diamond{background:linear-gradient(135deg,#60a5fa,#1d4ed8)}
+.league-master{background:linear-gradient(135deg,#c084fc,#6d28d9)}
+.league-grandmaster{background:linear-gradient(135deg,#ef4444,#7f1d1d)}
+.c-swim{background:linear-gradient(135deg,#06b6d4,#0369a1)}
+.c-famous{background:linear-gradient(135deg,#f59e0b,#ea580c)}
+.c-us{background:linear-gradient(135deg,#3b82f6,#4338ca)}
+.c-china{background:linear-gradient(135deg,#ef4444,#be123c)}
+.c-world{background:linear-gradient(135deg,#10b981,#047857)}
+.c-36{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
+#app.wide{max-width:1500px;height:100vh;height:100dvh;display:flex;flex-direction:column;padding-top:10px;padding-bottom:10px}
+.qhead{flex:none;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:10px 14px;margin-bottom:10px}
+.score{display:flex;gap:8px;flex:none}
+.sc{background:var(--panel2);border-radius:12px;padding:4px 12px;font-weight:800;font-size:19px}
+.sc.ok{color:#6ee7b7}.sc.bad{color:#fca5a5}
+.dots{display:flex;gap:8px;margin-top:8px}
+.dots i{flex:1;max-width:56px;height:30px;border-radius:10px;background:var(--panel2);font-style:normal;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:2px solid transparent}
+.dots i.cur{border-color:var(--blue);color:#fff}
+.dots i.ok{background:#065f46;color:#6ee7b7}.dots i.bad{background:#7f1d1d;color:#fca5a5}
+.split{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pane{overflow-y:auto;-webkit-overflow-scrolling:touch;min-height:0;padding-right:2px}
+.paneh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:var(--muted)}
+.iconbtn.sm{min-width:44px;min-height:40px;padding:0 10px;font-size:16px}
+.split .passage{margin-bottom:0;padding:18px 20px}
+.split .stickybar{padding-top:10px}
+@media (max-width:699px){
+  #app.wide{height:auto;display:block}
+  .split{display:block}
+  .pane{overflow:visible}
+  #pl{max-height:40vh;overflow-y:auto;margin-bottom:12px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+var STORIES=[];
+// rating = story difficulty on the same scale as the player's MMR (easy 950, medium 1250)
+STORIES.push(
+{id:'washington',title:'George Washington',cat:'famous',diff:'easy',rating:950,em:'🇺🇸',
+passage:`George Washington was born in Virginia in 1732. He grew up on a big farm and loved being outdoors. As a young man he became a soldier and learned how to lead people.
+
+In 1776 the American colonies decided to break away from Britain. Washington was chosen to lead the Continental Army. The war was very hard. His soldiers were often cold, hungry, and tired, but Washington never gave up. He kept his army together and inspired them to keep fighting.
+
+In 1781 the Americans won the war. In 1789 Washington became the first President of the United States. Many people wanted him to be president forever, but Washington believed a leader should not hold power for too long. After two terms, he went home to his farm.
+
+Today Washington is called the "Father of His Country." His face is on the quarter and the one-dollar bill, and the capital city, Washington, D.C., is named after him.`,
+q:[
+{q:'Where was George Washington born?',o:['New York','Virginia','Massachusetts','Pennsylvania'],a:1},
+{q:'What job did Washington have during the war?',o:['King of the colonies','Leader of the Continental Army','Governor of Virginia','British general'],a:1},
+{q:'Why did Washington leave the presidency after two terms?',o:['He was sick','He wanted to travel','He believed leaders should not hold power too long','He lost the election'],a:2},
+{q:'Where can you see Washington\'s face today?',o:['The $5 bill and nickel','The $10 bill and dime','The quarter and $1 bill','The $20 bill'],a:2}]},
+
+{id:'einstein',title:'Albert Einstein',cat:'famous',diff:'easy',rating:950,em:'🧠',
+passage:`Albert Einstein was born in Germany in 1879. As a boy he was quiet and loved to wonder how the world worked. He was very smart, but he did not always get top grades. Still, he never stopped asking big questions.
+
+When he grew up, Einstein became a physicist, a scientist who studies how the universe works. In 1905 he shared a famous equation, E = mc². It shows that energy and matter are connected. This idea changed how scientists think about the universe.
+
+Einstein also created the Theory of Relativity, which explains how space, time, and gravity fit together. Today it helps scientists study black holes and even helps GPS satellites keep correct time.
+
+In 1921 Einstein won the Nobel Prize in Physics. People around the world knew him by his kind face and wild, messy hair.
+
+In 1933 he moved to the United States to be safe from danger in Germany. He worked at Princeton University until he died in 1955.`,
+q:[
+{q:'Where was Einstein born?',o:['France','United States','Germany','Switzerland'],a:2},
+{q:'What does E = mc² show?',o:['How fast light travels','Energy and matter are connected','How far away the sun is','How to split an atom'],a:1},
+{q:'What prize did Einstein win in 1921?',o:['Nobel Peace Prize','Nobel Prize in Physics','Nobel Prize in Chemistry','A math medal'],a:1},
+{q:'Why did Einstein move to the United States?',o:['To learn English','To get a better teaching job','To be safe from danger in Germany','To explore America'],a:2}]},
+
+{id:'curie',title:'Marie Curie',cat:'famous',diff:'medium',rating:1250,em:'⚗️',
+passage:`Marie Curie was born in Poland in 1867. At that time, women in Poland were not allowed to attend university. But Marie loved science and refused to give up.
+
+She joined a secret school called the "Flying University," where young Polish women met in hidden places to learn. Later she moved to Paris and studied at the Sorbonne. She worked as a tutor and cleaner to pay for school. In the end she earned degrees in both physics and mathematics.
+
+With her husband Pierre, Marie studied a strange new kind of energy. She named it radioactivity, a word she invented herself. They discovered two new elements: polonium, named after her homeland Poland, and radium.
+
+Marie won the Nobel Prize twice, in Physics in 1903 and in Chemistry in 1911. She is the only person ever to win Nobel Prizes in two different sciences.
+
+Her work helped doctors treat cancer with radiation. During World War I she built mobile X-ray machines to help wounded soldiers. She died in 1934, but her discoveries still help millions of people.`,
+q:[
+{q:'Why did Marie secretly study in the "Flying University"?',o:['She was too young for school','She had no money','Women were not allowed in Polish universities','The schools were too far'],a:2},
+{q:'Which two elements did Marie Curie discover?',o:['Hydrogen and oxygen','Polonium and radium','Carbon and helium','Gold and silver'],a:1},
+{q:'How many Nobel Prizes did Marie Curie win?',o:['One','Three','Four','Two'],a:3},
+{q:'What word did Marie invent?',o:['Radiation therapy','Radioactivity','Nuclear','X-ray'],a:1},
+{q:'What did she build to help soldiers in World War I?',o:['Mobile hospitals','Mobile X-ray machines','Tanks','Radio towers'],a:1}]},
+
+{id:'edison',title:'Thomas Edison',cat:'famous',diff:'easy',rating:950,em:'💡',
+passage:`Thomas Edison was born in Ohio in 1847. As a child he was extremely curious and asked so many questions that his teacher called him "addled," which means confused. His mother took him out of school and taught him at home. This gave Edison freedom to try experiments.
+
+Edison became one of the greatest inventors ever. In 1879 he made the first practical electric light bulb. Before that, homes and streets were lit by candles and gas lamps. His bulb brought electric light into everyday life.
+
+He also invented the phonograph, a machine that could record sound and play it back. It was the first music player! He helped create early movie cameras too. His lab in Menlo Park, New Jersey, produced hundreds of inventions.
+
+Edison believed in hard work. He said, "Genius is one percent inspiration and ninety-nine percent perspiration." Perspiration means sweat.
+
+When he died in 1931, Edison held 1,093 patents, the most of any inventor in American history.`,
+q:[
+{q:'Why did Edison\'s mother teach him at home?',o:['The school was too far','His teacher thought he was confused because of his many questions','He was sick','There were no schools'],a:1},
+{q:'What was Edison\'s most famous invention?',o:['The telephone','The phonograph','The practical light bulb','The airplane'],a:2},
+{q:'What could the phonograph do?',o:['Take photographs','Record and play sound','Print books','Send messages'],a:1},
+{q:'What does "perspiration" mean in Edison\'s quote?',o:['Luck','Sweat, or hard work','Sleep','Money'],a:1}]},
+
+{id:'jobs',title:'Steve Jobs',cat:'famous',diff:'medium',rating:1250,em:'🍎',
+passage:`Steve Jobs was born in San Francisco in 1955. He was adopted as a baby by Paul and Clara Jobs, who encouraged his love of electronics. As a teenager he became friends with Steve Wozniak, a brilliant engineer. Together they started a company in a garage.
+
+That company was Apple. In 1977 they released the Apple II, one of the first successful personal computers. Before this, computers were giant machines used only by big companies. Jobs dreamed of putting a computer in every home.
+
+In 1984 Apple released the Macintosh, a computer with pictures called icons and a mouse, instead of hard typed commands. It was a big step forward. But in 1985 Jobs was forced to leave Apple after disagreements.
+
+He did not give up. He started a new company called NeXT and bought a small animation studio that became Pixar, the studio that made Toy Story.
+
+In 1997 Jobs returned to Apple, which was struggling. He led the creation of the iMac, iPod, iPhone, and iPad. Jobs said, "Stay hungry, stay foolish," meaning keep learning and trying new things. He died in 2011.`,
+q:[
+{q:'Where did Jobs and Wozniak start Apple?',o:['A university lab','A garage','A library','A big office tower'],a:1},
+{q:'What was special about the 1984 Macintosh?',o:['It was the cheapest computer','It used icons and a mouse','It could go on the internet','It was the smallest'],a:1},
+{q:'What did Jobs do after he left Apple in 1985?',o:['He retired and never worked again','He started NeXT and bought the studio that became Pixar','He joined Microsoft','He became a teacher'],a:1},
+{q:'Which product was NOT made after Jobs returned in 1997?',o:['iPod','iPhone','Apple II','iPad'],a:2}]},
+
+{id:'musk',title:'Elon Musk',cat:'famous',diff:'medium',rating:1250,em:'🚀',
+passage:`Elon Musk was born in South Africa in 1971. As a boy he loved science fiction books and dreamed of humans living on other planets. At age 12 he taught himself computer programming and sold his first video game for $500.
+
+He later moved to Canada and then to the United States to study. He started a software company called Zip2 and helped build PayPal, a way to pay money online.
+
+With the money he earned, Musk started two big companies. SpaceX builds rockets and spacecraft. His goal is to help people live on Mars one day. SpaceX has launched astronauts to the International Space Station and built rockets that can land themselves and be used again.
+
+Tesla builds electric cars. Musk believed the world should use fewer gasoline cars to help protect the environment.
+
+Musk is known for setting very big goals. Some people think his goals are too hard, but he keeps trying. His story shows that big dreams need a lot of learning, courage, and hard work.`,
+q:[
+{q:'How old was Musk when he taught himself programming?',o:['8','10','12','15'],a:2},
+{q:'What is the big dream behind SpaceX?',o:['Build the fastest airplane','Help people live on other planets','Win a race against NASA','Build a bridge to the Moon'],a:1},
+{q:'Why did Musk start Tesla?',o:['To make toy cars','To use fewer gasoline cars and protect the environment','To make trucks','To sell gasoline'],a:1},
+{q:'What is special about some SpaceX rockets?',o:['They use sails','They can land themselves and be reused','They carry 1,000 people','They fly underwater'],a:1}]}
+);
+STORIES.push(
+// ---------- US HISTORY ----------
+{id:'pilgrims',title:'The Pilgrims and Thanksgiving',cat:'us',diff:'easy',rating:950,em:'🦃',
+passage:`In 1620 a group of people called the Pilgrims sailed across the Atlantic Ocean on a ship named the Mayflower. They left England because they wanted the freedom to practice their own religion.
+
+The trip took 66 days and was dangerous. When they finally landed in what is now Massachusetts, winter was starting. They had to build shelters and find food quickly.
+
+The first winter was terrible. Many Pilgrims got sick, and about half of them died.
+
+In the spring, a Native American man named Squanto helped the survivors. He taught them how to plant corn and catch fish. The Wampanoag people shared what they knew and helped the newcomers.
+
+In the fall of 1621 the Pilgrims had a good harvest. They celebrated with a three-day feast and invited their Wampanoag neighbors. People call this the "First Thanksgiving."
+
+Today Americans celebrate Thanksgiving on the fourth Thursday of November. Families share a meal and say thank you for the good things in their lives.`,
+q:[
+{q:'Why did the Pilgrims leave England?',o:['To find gold','To practice their own religion freely','To trade with Native Americans','To build a castle'],a:1},
+{q:'Who helped the Pilgrims learn to survive?',o:['Spanish explorers','Squanto and the Wampanoag people','French traders','The British king'],a:1},
+{q:'About how many days did the trip across the ocean take?',o:['6','16','66','166'],a:2}]},
+
+{id:'revolution',title:'The American Revolution',cat:'us',diff:'medium',rating:1250,em:'🔔',
+passage:`In the 1770s America was made up of thirteen colonies ruled by Britain. The colonists had to pay taxes to the British king, but they had no voice in making the laws. Many thought this was unfair. Their slogan was "No taxation without representation!"
+
+In 1773 a group of colonists protested by sneaking onto British ships in Boston Harbor and throwing crates of tea into the water. This is called the Boston Tea Party.
+
+In April 1775 the first shots of the war were fired at Lexington and Concord in Massachusetts. The American Revolution had begun.
+
+On July 4, 1776, leaders signed the Declaration of Independence, which said the colonies were free from British rule. Thomas Jefferson was its main author. It declared that "all men are created equal."
+
+The war lasted until 1781, when General George Washington's army won the Battle of Yorktown. In 1783 Britain officially accepted American independence.
+
+The United States became a new nation built on freedom and self-government. Every July 4 Americans celebrate Independence Day, the nation's birthday.`,
+q:[
+{q:'What did "No taxation without representation" mean?',o:['No one should pay taxes','Colonists wanted a voice in the laws if they paid taxes','Colonists wanted to be British soldiers','Tea should be free'],a:1},
+{q:'What happened at the Boston Tea Party?',o:['Colonists drank tea with the king','Colonists threw British tea into the harbor','Soldiers arrested tea sellers','Colonists opened a tea shop'],a:1},
+{q:'Who was the main author of the Declaration of Independence?',o:['George Washington','Benjamin Franklin','Thomas Jefferson','John Adams'],a:2},
+{q:'What do Americans celebrate on July 4?',o:['Thanksgiving','Independence Day','Memorial Day','Labor Day'],a:1}]},
+
+{id:'lincoln',title:'Abraham Lincoln',cat:'us',diff:'medium',rating:1250,em:'🎩',
+passage:`Abraham Lincoln was born in a small log cabin in Kentucky in 1809. His family was poor and he had little school, but he loved to read. He walked miles to borrow books and read by firelight. This love of learning helped him become a lawyer and then a leader.
+
+In 1860 Lincoln was elected the 16th President. Many Southern states depended on enslaved people to work their farms, and they feared Lincoln would end slavery. Eleven states left the United States and formed the Confederacy. This began the Civil War.
+
+Lincoln believed the country must stay united. In 1863 he issued the Emancipation Proclamation, which declared that enslaved people in the Confederate states were free. It was a historic turning point.
+
+That same year he gave a short, famous speech at Gettysburg. He reminded people that the nation was built on the idea that "all men are created equal."
+
+In 1865 the Union won the Civil War. Sadly, just days later Lincoln was shot at Ford's Theatre in Washington, D.C., and died.
+
+He is remembered as one of America's greatest presidents, a man who kept the nation together and helped end slavery.`,
+q:[
+{q:'Where was Lincoln born?',o:['Virginia','Ohio','Tennessee','Kentucky'],a:3},
+{q:'What did the Emancipation Proclamation declare?',o:['War on Britain','Enslaved people in Confederate states were free','The war was over','Lincoln would be president for life'],a:1},
+{q:'Why did Southern states leave the Union?',o:['They wanted a new capital','They feared Lincoln would end slavery','They wanted lower taxes on tea','They wanted a king'],a:1},
+{q:'What helped Lincoln become a leader even though he had little school?',o:['Rich parents','Reading many books on his own','A private tutor','Winning contests'],a:1}]},
+
+// ---------- CHINA HISTORY ----------
+{id:'greatwall',title:'The Great Wall of China',cat:'china',diff:'easy',rating:950,em:'🏯',
+passage:`The Great Wall of China is one of the most amazing structures ever built. All of its parts together stretch for more than 13,000 miles (about 21,000 kilometers) across mountains, deserts, and plains in northern China.
+
+The wall was not built all at once. Different emperors ordered new sections over many centuries. Around 221 BC, Emperor Qin Shi Huang connected older walls into a longer barrier. Many parts that tourists visit today were built during the Ming Dynasty, between 1368 and 1644.
+
+The wall helped protect China from invaders from the north. Watchtowers stood along the wall so soldiers could spot enemies far away and send smoke signals to warn others.
+
+Hundreds of thousands of workers, including farmers, soldiers, and prisoners, helped build it over the years. The work was very hard and dangerous.
+
+Today the Great Wall is a symbol of China's strength and history. In 1987 it was named a UNESCO World Heritage Site, and millions of people visit every year.`,
+q:[
+{q:'About how long are all the parts of the Great Wall together?',o:['500 miles','2,000 miles','13,000 miles','50,000 miles'],a:2},
+{q:'What was the main purpose of the Great Wall?',o:['To trade goods','To protect China from northern invaders','To hold back floods','To mark farm land'],a:1},
+{q:'How did soldiers warn each other of danger?',o:['Church bells','Smoke signals from watchtowers','Telephones','Flags in the sea'],a:1},
+{q:'Which emperor connected older walls around 221 BC?',o:['Kublai Khan','Qin Shi Huang','Emperor Kangxi','Emperor Wu'],a:1}]},
+
+{id:'silkroad',title:'The Silk Road',cat:'china',diff:'medium',rating:1250,em:'🐪',
+passage:`About 2,000 years ago a network of trade routes connected China with Central Asia, the Middle East, and Europe. It was called the Silk Road because China sold its valuable silk cloth along these routes.
+
+The Silk Road was not a single road. It was a web of many paths that stretched for about 4,000 miles. Merchants traveled with camels and horses across hot deserts, tall mountains, and wide grasslands. A trip could take months or even years.
+
+Traders carried silk, spices, gems, glass, and gold. But more than goods traveled along the Silk Road. Ideas, religions, art, and inventions also moved from place to place. Buddhism spread from India to China. Paper and printing, both Chinese inventions, slowly traveled west to Europe.
+
+Not everything that traveled was good. Many historians think that diseases also spread along the trade routes.
+
+In the 1200s an Italian explorer named Marco Polo traveled to China. His stories amazed people in Europe.
+
+Today historians study the Silk Road as one of the most important links between East and West.`,
+q:[
+{q:'Why was it called the Silk Road?',o:['It was paved with silk','China sold valuable silk along it','It was shaped like a thread','A man named Silk built it'],a:1},
+{q:'Which religion spread from India to China along the Silk Road?',o:['Christianity','Islam','Buddhism','Judaism'],a:2},
+{q:'Which Chinese inventions traveled west to Europe?',o:['Cars and trains','Paper and printing','Telephones','Light bulbs'],a:1},
+{q:'Why did a trip on the Silk Road take so long?',o:['Merchants walked in circles','Travelers crossed deserts and mountains with camels and horses','There were no maps in the world','Traders only traveled in winter'],a:1}]},
+
+{id:'terracotta',title:'The Terracotta Warriors',cat:'china',diff:'medium',rating:1250,em:'🏺',
+passage:`In 1974 some farmers digging a well near the city of Xi'an, China, made one of the greatest discoveries of all time. They found pieces of clay statues buried underground. It was the first sign of the Terracotta Army.
+
+The army was made more than 2,000 years ago to guard the tomb of Qin Shi Huang, China's first emperor. In 221 BC he joined many separate kingdoms into one empire. He feared death and wanted an army of clay soldiers to protect him in the next life.
+
+More than 8,000 life-size soldiers have been found, along with horses, chariots, and real weapons. Each soldier has its own face. No two are exactly alike. They were once painted in bright colors, but the paint has faded over time.
+
+Ancient writers said that about 700,000 workers helped build the emperor's tomb. The work lasted many years.
+
+Today the Terracotta Warriors are a UNESCO World Heritage Site and one of China's most famous places to visit. They give us a window into China's ancient world.`,
+q:[
+{q:'Who discovered the Terracotta Warriors in 1974?',o:['Museum workers','Farmers digging a well','Soldiers on a march','Students on a trip'],a:1},
+{q:'Why was the Terracotta Army made?',o:['To train real soldiers','To protect the emperor in the next life','To decorate a palace','To scare animals'],a:1},
+{q:'What is special about the soldiers\' faces?',o:['They all look the same','No two faces are exactly alike','They all wear masks','They have no faces'],a:1},
+{q:'What happened to the original bright paint?',o:['It was washed off on purpose','It faded over time','It was never there','It turned to gold'],a:1}]},
+
+// ---------- WORLD HISTORY ----------
+{id:'egypt',title:'Ancient Egypt and the Pyramids',cat:'world',diff:'easy',rating:950,em:'🔺',
+passage:`More than 4,000 years ago a great civilization grew along the Nile River in northeastern Africa. Every year the Nile flooded and left rich soil behind. This helped farmers grow plenty of food.
+
+Ancient Egypt was ruled by powerful leaders called pharaohs. Egyptians believed pharaohs were gods on Earth. When a pharaoh died, he was buried in a special tomb to help him on his journey to the afterlife.
+
+The most famous tombs are the pyramids. The Great Pyramid at Giza was built around 2560 BC and is made of about 2.3 million stone blocks. Skilled workers spent many years building it. It is one of the Seven Wonders of the Ancient World.
+
+Egyptians also invented hieroglyphics, a writing system that uses pictures and symbols. They made a paper-like material called papyrus from reeds that grew along the Nile.
+
+For about 3,000 years, Ancient Egypt was one of the most powerful civilizations in the world.`,
+q:[
+{q:'Which river helped Egyptian farmers?',o:['The Amazon','The Nile','The Yangtze','The Ganges'],a:1},
+{q:'What were Egyptian rulers called?',o:['Kings','Emperors','Pharaohs','Sultans'],a:2},
+{q:'What is hieroglyphics?',o:['A type of pyramid','A writing system of pictures and symbols','A kind of boat','A Roman coin'],a:1}]},
+
+{id:'davinci',title:'Leonardo da Vinci',cat:'world',diff:'medium',rating:1250,em:'🎨',
+passage:`Leonardo da Vinci was born in Italy in 1452, during a time called the Renaissance, when art and learning were growing quickly in Europe. Leonardo seemed able to do everything. He was a painter, sculptor, architect, musician, scientist, engineer, and inventor.
+
+He is most famous for two paintings, the Mona Lisa and The Last Supper. The Mona Lisa hangs in the Louvre Museum in Paris, where millions of people visit it each year. People still wonder about her mysterious smile.
+
+But Leonardo was much more than a painter. He filled thousands of notebook pages with drawings and ideas. He sketched a flying machine that looked like a helicopter hundreds of years before one was built. He also drew plans for a tank and a robot.
+
+Leonardo studied the human body carefully and drew muscles, bones, and organs in great detail. Many of his drawings are still amazingly accurate.
+
+Leonardo believed that art and science were closely connected. He used math and science to make his paintings look real. He died in 1519, leaving ideas that people still study today.`,
+q:[
+{q:'In what period was Leonardo born?',o:['The Stone Age','The Renaissance','The Industrial Revolution','The Space Age'],a:1},
+{q:'Where is the Mona Lisa displayed?',o:['The British Museum','The Louvre in Paris','The White House','The Great Wall'],a:1},
+{q:'What did Leonardo sketch hundreds of years before it was built?',o:['A helicopter-like flying machine','A television','A rocket to Mars','A computer'],a:0},
+{q:'What did Leonardo believe about art and science?',o:['They have nothing in common','They are closely connected','Art is not important','Science is too hard'],a:1}]},
+
+{id:'olympics',title:'The Ancient Olympics',cat:'world',diff:'easy',rating:950,em:'🏅',
+passage:`The Olympic Games began in Ancient Greece almost 3,000 years ago. The first recorded games were held in 776 BC in a place called Olympia. They took place every four years to honor Zeus, the king of the Greek gods.
+
+In those days only free Greek men could compete. Athletes ran, jumped, wrestled, threw the discus, and raced chariots. Winners did not get medals. They got a crown made of olive leaves. Even so, winning was a great honor, and champions were treated like heroes at home.
+
+The games also helped bring peace. Even when Greek cities were at war, a special truce let athletes and fans travel safely to Olympia.
+
+The ancient Olympics continued for about 1,200 years before they ended around 393 AD.
+
+In 1896 a Frenchman named Pierre de Coubertin helped bring the games back in Athens, Greece. These became the modern Olympics. Now athletes from nearly every country compete together every four years.`,
+q:[
+{q:'When were the first recorded Olympic Games held?',o:['300 AD','500 BC','776 BC','1000 BC'],a:2},
+{q:'What did ancient winners receive?',o:['A gold medal','A crown of olive leaves','A bag of money','A new house'],a:1},
+{q:'Who helped bring the Olympics back in 1896?',o:['Zeus','Pierre de Coubertin','Julius Caesar','Leonardo da Vinci'],a:1}]}
+);
+// ---------- 三十六计 (The Thirty-Six Stratagems) ----------
+STORIES.push(
+{id:'s32',title:'空城计 · The Empty City',cat:'s36',diff:'easy',rating:950,em:'🏰',
+passage:`三十六计 #32 · 空城计 (kōng chéng jì) · The Empty City Strategy
+
+Idea: when you are weak, acting calm and confident can make a strong enemy afraid.
+
+This story comes from the famous Chinese novel "Romance of the Three Kingdoms." The clever leader Zhuge Liang was sitting in a small city with only a few helpers. Most of his army was far away. Suddenly a huge enemy army led by Sima Yi marched toward the city.
+
+Zhuge Liang did not panic. He ordered every city gate to be opened wide. Then he sat on top of the gate tower, dressed in simple robes, and played his qin, a Chinese string instrument, slowly and peacefully.
+
+Sima Yi arrived and stared. Why were the gates open? Why was Zhuge Liang so calm? Sima Yi knew that Zhuge Liang was very clever, so he thought, "This must be a trap! Soldiers must be hiding inside." He ordered his army to turn back.
+
+The city was saved without a single fight. The lesson: a strong enemy can be beaten by smart thinking, and fear is sometimes the strongest weapon.`,
+q:[
+{q:'Why was Zhuge Liang in danger?',o:['His walls were broken','Most of his army was far away','He had no food','He was sleeping'],a:1},
+{q:'What did Zhuge Liang do when the enemy arrived?',o:['He ran away','He attacked with swords','He opened the gates and played music calmly','He sent a letter to give up'],a:2},
+{q:'Why did Sima Yi turn back?',o:['He thought it was a trap','He was hungry','It started to rain','He lost his map'],a:0},
+{q:'What lesson does 空城计 teach?',o:['Never fight a strong enemy','Clever thinking and calmness can beat a stronger enemy','Music is better than armies','Always run away'],a:1}]},
+
+{id:'s15',title:'调虎离山 · Lure the Tiger Down',cat:'s36',diff:'easy',rating:950,em:'🐯',
+passage:`三十六计 #15 · 调虎离山 (diào hǔ lí shān) · Lure the Tiger Away from the Mountain
+
+Idea: a tiger is very strong on its own mountain, so tempt it to leave before you act.
+
+A tiger knows every path and hiding place in its mountain home. If you fight it there, you will probably lose. But on open flat land, the tiger loses its advantage.
+
+Here is a story from the Three Kingdoms period. A young leader named Sun Ce wanted to capture the strong city of Lujiang, but its walls were hard to break. So Sun Ce sent gifts and kind words to the city's ruler, Liu Xun, and begged for his help against another enemy at a place called Shangliao.
+
+Liu Xun was happy to be asked, and he marched out with his army to attack Shangliao. While his army was away, Sun Ce rushed in and took the almost empty city of Lujiang.
+
+The lesson: do not fight where your opponent is strongest. First find a way to move them away from their strong place. Players use this idea in many games and sports too.`,
+q:[
+{q:'What does 调虎离山 mean?',o:['Attack the tiger head-on','Lure the tiger away from its mountain','Be friends with a tiger','Hide from a tiger'],a:1},
+{q:'Why is a tiger weaker on flat land?',o:['It gets tired of running','It loses the advantage of knowing its mountain','Flat land is hot','Tigers cannot run there'],a:1},
+{q:'How did Sun Ce get Liu Xun to leave Lujiang?',o:['He threatened him','He asked for help against another enemy at Shangliao','He built a wall','He gave him the city'],a:1},
+{q:'What happened while Liu Xun\'s army was away?',o:['Lujiang stayed safe','Sun Ce took the almost empty city','Rain stopped the battle','Both sides made peace'],a:1}]},
+
+{id:'s01',title:'瞒天过海 · Cross the Sea in Secret',cat:'s36',diff:'easy',rating:950,em:'🌊',
+passage:`三十六计 #1 · 瞒天过海 (mán tiān guò hǎi) · Fool the Heavens to Cross the Sea
+
+Idea: hide something big in plain sight, so people are so used to it that they stop noticing.
+
+This is a legend about Emperor Taizong of the Tang Dynasty. The emperor was about to lead an army across the sea to a faraway land, but he was afraid of the ocean and did not want to board a ship.
+
+His general knew that delay would be dangerous. So he told the emperor that a rich local man was inviting him to a big feast. The emperor walked into a large house with soft cloth walls and enjoyed music, food, and talk.
+
+After a while the floor began to rock gently, and the emperor heard the sound of waves. He looked out and saw only water everywhere. The "house" was actually a huge ship covered with cloth, and the army was already sailing across the sea!
+
+The lesson: when something looks ordinary, people stop watching closely. Clever planners sometimes hide a bold move inside an everyday scene.`,
+q:[
+{q:'Why did the emperor not want to cross the sea?',o:['He was afraid of the ocean','He hated food','He was too busy','He had no army'],a:0},
+{q:'How did the general trick the emperor?',o:['He gave him a magic potion','He invited him to a feast in a "house" that was really a ship','He tied him up','He told him the sea was frozen'],a:1},
+{q:'What does 瞒天过海 teach?',o:['Boats are safer than houses','Something ordinary-looking can hide a bold plan','Always trust a feast','Never travel by sea'],a:1}]},
+
+{id:'s02',title:'围魏救赵 · Save Zhao by Besieging Wei',cat:'s36',diff:'medium',rating:1250,em:'🗡️',
+passage:`三十六计 #2 · 围魏救赵 (wéi wèi jiù zhào) · Besiege Wei to Rescue Zhao
+
+Idea: if you cannot beat your enemy where they are strong, attack the place they cannot afford to lose.
+
+In ancient China, around 354 BC, the strong state of Wei attacked the weaker state of Zhao and surrounded its capital. Zhao begged the state of Qi for help.
+
+The Qi general Tian Ji wanted to rush straight to Zhao and fight the Wei army there. But his adviser, Sun Bin, who is said to be a descendant of the famous Sun Tzu, had a smarter plan.
+
+"Wei's best soldiers are far away at Zhao," said Sun Bin. "That means Wei's own capital is probably weakly guarded. Let us attack there instead!"
+
+Qi's army marched toward Wei's capital. When the Wei army heard that their home was in danger, they gave up the attack on Zhao and hurried back. Tired from the fast march, they were ambushed by the waiting Qi army at a place called Guiling, and they lost badly.
+
+Zhao was saved, and Qi never had to fight at Zhao. The lesson: do not push against the strongest part of the enemy. Find what they must protect, and threaten that.`,
+q:[
+{q:'What problem started this story?',o:['Qi attacked Wei','Wei attacked Zhao\'s capital','Sun Bin was captured','Zhao attacked Qi'],a:1},
+{q:'What was Sun Bin\'s clever idea?',o:['March straight to Zhao','Attack Wei\'s capital while its best army was away','Ask Wei for peace','Build a wall around Qi'],a:1},
+{q:'Why did the Wei army hurry home?',o:['They heard their own capital was in danger','They ran out of water','They won and wanted to celebrate','Their king got sick'],a:0},
+{q:'What is the main lesson of 围魏救赵?',o:['Always attack the strongest part of the enemy','Threaten what the enemy must protect instead of fighting where they are strong','Never help friends','Speed matters more than planning'],a:1},
+{q:'Where did Qi ambush the tired Wei army?',o:['Guiling','Beijing','The Yellow River bank','Lujiang'],a:0}]},
+
+{id:'s06',title:'声东击西 · Noise East, Strike West',cat:'s36',diff:'medium',rating:1250,em:'🎯',
+passage:`三十六计 #6 · 声东击西 (shēng dōng jī xī) · Make Noise in the East, Strike in the West
+
+Idea: lead your opponent to look in the wrong direction, then act somewhere else.
+
+In 205 BC the general Han Xin needed to cross the Yellow River to attack the army of Wei Bao. Wei Bao's soldiers were guarding the main crossing at Linjin, so crossing there would be very dangerous.
+
+Han Xin put on a show. His soldiers collected many boats at Linjin and made a lot of noise as if they were about to cross. Wei Bao rushed his troops to guard Linjin.
+
+Meanwhile Han Xin sent another group of soldiers far upriver to a place called Xiayang, where almost no one was guarding. They had no boats, so they used large wooden barrels and jars tied together as rafts and crossed the river quietly. Then they attacked Wei Bao's home area from behind.
+
+Wei Bao was surprised and defeated. This stratagem works because people believe what they see and hear. In sports, a player may look left and then pass right. In games, you can show one plan to hide another.
+
+The lesson: control where your opponent is looking, and you control what happens next.`,
+q:[
+{q:'What does 声东击西 mean?',o:['Attack from both sides at the same time','Make noise in the east and strike in the west','Hide in the mountains','Run away at night'],a:1},
+{q:'What did Han Xin do at Linjin?',o:['He attacked at once','He gathered boats and made noise as if he would cross','He went home','He built a tower'],a:1},
+{q:'How did the other group cross the river at Xiayang?',o:['They swam','They used wooden barrels and jars as rafts','They flew over','They used a stone bridge'],a:1},
+{q:'Which example uses the same idea in sports?',o:['Running straight every time','Looking left and then passing right','Sitting on the bench','Practicing alone'],a:1}]},
+
+{id:'s33',title:'反间计 · Make the Enemy Fool Himself',cat:'s36',diff:'medium',rating:1250,em:'🕵️',
+passage:`三十六计 #33 · 反间计 (fǎn jiàn jì) · Turn the Enemy's Own Spy Against Him
+
+Idea: use your enemy's suspicion against him, so he damages himself.
+
+This story is told in "Romance of the Three Kingdoms." Before the Battle of Red Cliffs, the powerful leader Cao Cao wanted to cross the Yangtze River with a huge fleet. His navy was led by two skilled commanders, Cai Mao and Zhang Yun, who knew how to fight on water. Cao Cao's own northern soldiers did not.
+
+A smart general named Zhou Yu, on the other side, knew that he could not win while those two commanders led the fleet. So he made a plan. A visitor named Jiang Gan, a friend of Cao Cao, came to Zhou Yu's camp to look around. Zhou Yu pretended to get drunk and left a fake secret letter lying on his desk, as if Cai Mao and Zhang Yun were secretly working for him.
+
+Jiang Gan stole the letter and brought it to Cao Cao. Cao Cao was furious. Without checking the facts, he ordered both commanders to be executed. Soon he realized he had made a terrible mistake, but it was too late.
+
+The lesson: before you act on a secret message, check whether it is true. A suspicious mind can be used as a weapon against itself.`,
+q:[
+{q:'Why were Cai Mao and Zhang Yun important to Cao Cao?',o:['They were his cooks','They were skilled commanders of his navy','They were his teachers','They were his brothers'],a:1},
+{q:'What did Zhou Yu leave on his desk?',o:['A map of the river','A fake secret letter','A bag of gold','A sword'],a:1},
+{q:'What did Cao Cao do after reading the letter?',o:['He checked the facts carefully','He ordered both commanders to be executed','He returned home','He made peace'],a:1},
+{q:'What lesson does 反间计 teach?',o:['Always believe secret letters','Check whether a message is true before you act','Never trust any friend','Drinking helps you think'],a:1},
+{q:'Whose book tells this story?',o:['Romance of the Three Kingdoms','A cookbook','The Art of War','Journey to the West'],a:0}]}
+);
+// ---------- SWIM BETTER: from Bronze to Silver to Gold ----------
+STORIES.push(
+{id:'sw1',title:'Streamline: Be a Torpedo',cat:'swim',diff:'easy',rating:950,em:'🚀',
+passage:`The fastest position in swimming is called the streamline. When you push off the wall in a streamline, you slide through the water like a torpedo.
+
+Here is how to make a great streamline. Put your arms straight over your head. Stack one hand on top of the other and squeeze your arms tight against your ears. Look down at the bottom of the pool, not forward. Squeeze your tummy muscles, keep your legs together, and point your toes.
+
+Why does it matter? Water pushes back on your body, and this push is called drag. A wide, wiggly body makes lots of drag. A long, thin body makes very little. That is why you glide much farther in a tight streamline than with loose arms.
+
+Swimmers use a streamline after every start and every turn. In many races, swimmers are allowed to stay underwater for up to 15 meters after a start or a turn. Fast swimmers use that space to kick hard in their streamline before they come up to swim.
+
+Practice makes it automatic. Push off the wall and count how far you glide. Can you beat your own distance next time?`,
+q:[
+{q:'What is the fastest body position in swimming?',o:['The cannonball','The streamline','The doggy paddle','The starfish'],a:1},
+{q:'Where should your arms be in a streamline?',o:['Out to the sides','At your hips','Straight overhead, squeezed against your ears','Crossed over your chest'],a:2},
+{q:'What is "drag"?',o:['The push of water against your body','A kind of kick','The wall of the pool','A swim cap'],a:0},
+{q:'Why does a tight streamline help you go faster?',o:['It makes less drag','It makes you heavier','It makes the water warmer','It lets you breathe more'],a:0}]},
+
+{id:'sw2',title:'Freestyle: Kick, Pull, Breathe',cat:'swim',diff:'medium',rating:1250,em:'🏊',
+passage:`Freestyle is the stroke most swimmers use the most. To improve, work on three things: kick, pull, and breathing.
+
+Kick. Your kick should start at your hips, not your knees. Keep your legs fairly straight with floppy, relaxed ankles. Make small, fast kicks that stay just below the surface. A big splash does not mean a fast kick!
+
+Pull. Each arm reaches forward, then "catches" the water. To catch well, bend your elbow so your forearm and hand face the back wall, like you are reaching over a big barrel. Then push the water backward past your hip. Pushing more water back sends you forward.
+
+Breathing. Many young swimmers lift their heads, which makes their legs sink and slows them down. Instead, keep one goggle in the water and turn your head to the side, as if your head is rolling on a pillow. Blow bubbles out through your nose and mouth the whole time your face is in the water, so you can take a quick breath in when you turn.
+
+Later, your coach may teach you to breathe on both sides, every three strokes. This keeps your stroke balanced and helps you see your competitors during a race.
+
+Slow, smooth practice beats fast, messy practice. Fix the technique first, and the speed will come.`,
+q:[
+{q:'Where should your freestyle kick start?',o:['Your knees','Your hips','Your toes','Your shoulders'],a:1},
+{q:'What does a good "catch" look like?',o:['A straight, stiff arm','A bent elbow with the forearm facing the back wall','A closed fist held high','Slapping the water'],a:1},
+{q:'What should you do with bubbles while your face is in the water?',o:['Hold your breath','Blow them out through your nose and mouth','Swallow them','Blow only when you stand up'],a:1},
+{q:'Why is lifting your head to breathe a problem?',o:['It makes your legs sink and slows you down','It is against the rules','It makes your goggles fall off','It makes you dizzy'],a:0},
+{q:'What is one benefit of breathing on both sides?',o:['It keeps your stroke balanced','It makes you swim backward','It means you never need to breathe','It makes the pool deeper'],a:0}]},
+
+{id:'sw3',title:'Win the Walls: Starts and Turns',cat:'swim',diff:'medium',rating:1250,em:'🧱',
+passage:`In a short race, a lot of time is won or lost at the walls. Great swimmers practice starts and turns just as much as strokes.
+
+The start. Stand with your toes gripping the edge. When the signal sounds, push off and throw your arms forward. Your hands should enter the water first, then your head, body, and feet, all through the same "hole" in the water. This is like diving through a hula hoop. A flat belly flop is slow and can hurt, so keep your body long and tight.
+
+The freestyle flip turn. When you get near the wall, tuck your chin and do a somersault. Your feet land on the wall with your knees bent. Then push off hard. Fast swimmers push off on their backs or sides, rotate to their tummies in the streamline, and start kicking before they surface.
+
+The touch turn. In breaststroke and butterfly, you must touch the wall with both hands at the same time. Then turn quickly and push off.
+
+Tip: count your strokes from the flags to the wall so you always know where it is. This keeps you from taking an extra half stroke or gliding into the wall.
+
+Practice makes turns smooth. Even saving a quarter of a second at each turn adds up over a race.`,
+q:[
+{q:'How should your body enter the water on a dive start?',o:['Like a belly flop','Through the same "hole," hands first','Feet first','Sideways'],a:1},
+{q:'What happens in a flip turn?',o:['You stop and rest','You somersault and push off the wall with your feet','You touch with both hands only','You swim around the wall'],a:1},
+{q:'How must you touch the wall in breaststroke and butterfly?',o:['With one foot','With both hands at the same time','With your head','With a kickboard'],a:1},
+{q:'Why count your strokes from the flags to the wall?',o:['To know exactly where the wall is','To breathe less','To go slower','To impress your friends'],a:0}]},
+
+{id:'sw4',title:'Four Strokes, Four Tricks',cat:'swim',diff:'medium',rating:1250,em:'🌊',
+passage:`Swim teams use four strokes: freestyle, backstroke, breaststroke, and butterfly. Each one has a key trick.
+
+Backstroke. Lie on your back and keep your head still, like a glass of water is balanced on your forehead. Look up and slightly back. Keep your hips up near the surface and kick steadily from the hips. Arms take turns reaching straight back over your shoulders, pinky finger first.
+
+Breaststroke. This stroke has a special rhythm: pull, breathe, kick, glide. Your hands and feet move at the same time on both sides, never one side before the other. The kick is round, like a frog. Many swimmers get disqualified for a scissor kick, so always keep both feet turning out together.
+
+Butterfly. Butterfly is a wave. Do two kicks for each arm pull: one as your hands enter the water, and one as you push the water back. Press your chest down gently so your hips float up. Breathe forward over the water at the end of the pull, with your chin close to the water.
+
+Individual Medley. In the IM, you swim all four strokes in this order: butterfly, backstroke, breaststroke, freestyle. A swimmer who learns all four strokes well can race in more events.
+
+Master the rhythm of each stroke, and you will keep moving up.`,
+q:[
+{q:'What is the rhythm of breaststroke?',o:['Kick, kick, pull, breathe','Pull, breathe, kick, glide','Glide, glide, kick, pull','Breathe, breathe, pull, pull'],a:1},
+{q:'How many kicks do you do for each butterfly arm pull?',o:['One','Two','Three','Zero'],a:1},
+{q:'What order are the strokes in an Individual Medley?',o:['Free, back, breast, fly','Fly, back, breast, free','Back, fly, free, breast','Breast, free, fly, back'],a:1},
+{q:'What helps most in backstroke head position?',o:['Keeping your head still','Shaking your head','Looking at your feet','Bobbing up and down'],a:0},
+{q:'Why do some swimmers get disqualified in breaststroke?',o:['They swim too fast','They use a scissor kick instead of a round frog kick','They wear the wrong cap','They breathe too much'],a:1}]},
+
+{id:'sw5',title:'Practice Like a Champion',cat:'swim',diff:'easy',rating:950,em:'🏅',
+passage:`Champions are not just born. They are built at practice. Here are habits that help swimmers move up to the next team.
+
+Show up and listen. Be on time and keep your goggles and cap ready. When your coach explains a drill, watch and listen carefully. Then try it again with the coach's tip in your mind. Swimmers who listen improve faster than swimmers who just swim laps.
+
+Do the drills. Drills like kicking with a board, one-arm freestyle, and streamline push-offs can feel boring, but they fix small mistakes. Small fixes add up to big speed.
+
+Count and track. Use the pace clock to see how long each lap takes. Write down your times in a notebook. When you can see your numbers improve, practice becomes a game against your past self.
+
+Take care of your body. Drink water, eat breakfast, and eat healthy snacks after practice. Kids your age usually need nine to twelve hours of sleep each night. Muscles grow and learn while you sleep.
+
+Be a great teammate. Cheer for others and share lane space politely. Coaches notice effort, attitude, and kindness.
+
+Do these simple things every week, and the Silver and Gold teams will get closer.`,
+q:[
+{q:'What should you do when your coach explains a drill?',o:['Talk with a friend','Watch and listen carefully, then try it','Skip it','Leave the pool'],a:1},
+{q:'Why write your swim times in a notebook?',o:['So you can see your improvement','So you can lose it','Because coaches require poems','To make the pool warmer'],a:0},
+{q:'About how much sleep do kids your age need?',o:['Three to four hours','Five to six hours','Nine to twelve hours','Fifteen hours'],a:2},
+{q:'Which is a good habit of a great teammate?',o:['Blocking the lane','Cheering for others','Splashing others on purpose','Arriving late'],a:1}]},
+
+{id:'sw6',title:'From Bronze to Silver to Gold',cat:'swim',diff:'medium',rating:1250,em:'🥇',
+passage:`Many swim clubs, like the Gateway swim team in St. Louis, place swimmers in groups such as Bronze, Silver, and Gold. Each club makes its own rules for moving up, so the best first step is to ask your coach, "What do I need to work on to move up?"
+
+Coaches often look at four things: skills, times, attendance, and attitude. Skills means legal strokes, good turns, and clean starts. Times means your race results compared with the team's time standards. Attendance means going to practice regularly. Attitude means listening, trying hard, and being a good teammate.
+
+Set small goals. A goal like "be Gold next year" is big and far away. Break it into steps: learn a legal flip turn this month, drop two seconds in the 50 freestyle by the next meet, and add a good streamline off every wall.
+
+Know your personal best, or PB. A PB is your own fastest time in an event. At meets, try to beat your PB, not just the swimmer in the next lane. When you do, you earn a happy dance and a new goal.
+
+Race smart. Do not sprint at the start and run out of energy. Swim the first half smoothly and finish strong. Many races are won in the last few strokes.
+
+Stay patient. Every swimmer improves at their own speed. If you work hard, keep learning, and enjoy the water, Silver and Gold will be waiting for you.`,
+q:[
+{q:'What is the best first step to find out how to move up a team?',o:['Guess','Ask your coach what to work on','Change teams','Wait a year'],a:1},
+{q:'Which is NOT one of the four things coaches often look at?',o:['Skills','Times','Attendance','The color of your swim cap'],a:3},
+{q:'What is a "personal best" (PB)?',o:['The best swimmer on the team','Your own fastest time in an event','The coach\'s favorite stroke','A kind of goggles'],a:1},
+{q:'What is a smart way to race?',o:['Sprint at the start and stop','Swim the first half smoothly and finish strong','Rest in the middle','Never turn your head'],a:1},
+{q:'Why break a big goal into small steps?',o:['Small steps make a big goal easier to reach','Small steps are always boring','Coaches do not allow big goals','Small steps use less water'],a:0}]}
+);
+// ================= STAR Reading Ladder =================
+// Rating model (SC2-style ladder, Elo-based): every story has a difficulty `rating`;
+// the player has an MMR. Score fraction vs. expected result moves MMR up/down.
+// First 5 games are "placement" games (bigger swings). Replays move MMR less (K=24).
+var KEY='starReadingV1';
+var CATS=[
+ {id:'swim',n:'Swim Better',zh:'游泳进阶 · Bronze→Silver→Gold',em:'🏊',cls:'c-swim'},
+ {id:'famous',n:'Famous People',zh:'名人故事',em:'🌟',cls:'c-famous'},
+ {id:'us',n:'US History',zh:'美国历史',em:'🗽',cls:'c-us'},
+ {id:'china',n:'China History',zh:'中国历史',em:'🐉',cls:'c-china'},
+ {id:'world',n:'World History',zh:'世界历史',em:'🌍',cls:'c-world'},
+ {id:'s36',n:'36 Stratagems',zh:'三十六计',em:'⚔️',cls:'c-36'}
+];
+var LEAGUES=[
+ {k:'bronze',n:'Bronze',zh:'青铜',min:0,ic:'🥉'},
+ {k:'silver',n:'Silver',zh:'白银',min:900,ic:'🥈'},
+ {k:'gold',n:'Gold',zh:'黄金',min:1000,ic:'🥇'},
+ {k:'platinum',n:'Platinum',zh:'铂金',min:1100,ic:'🔷'},
+ {k:'diamond',n:'Diamond',zh:'钻石',min:1200,ic:'💎'},
+ {k:'master',n:'Master',zh:'大师',min:1320,ic:'👑'},
+ {k:'grandmaster',n:'Grandmaster',zh:'宗师',min:1440,ic:'🏆'}
+];
+var PLACEMENT=5;
+
+function defaults(){return {name:'Reader',mmr:800,games:0,streak:0,best:800,hist:[],done:{},fs:21}}
+var storageOK=true;
+function load(){
+  try{var s=localStorage.getItem(KEY); if(s){var p=JSON.parse(s),d=defaults(); for(var k in p)d[k]=p[k]; return d;}}
+  catch(e){storageOK=false}
+  return defaults();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){storageOK=false}}
+var P=load();
+try{localStorage.setItem('__t','1');localStorage.removeItem('__t')}catch(e){storageOK=false}
+
+var S={screen:'home',cat:null,sid:null,qi:0,qs:[],ans:[],res:null,armed:false,msg:''};
+
+// ---------- helpers ----------
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function story(id){return STORIES.filter(function(s){return s.id===id})[0]}
+function cat(id){return CATS.filter(function(c){return c.id===id})[0]}
+function league(m){var l=LEAGUES[0];LEAGUES.forEach(function(x){if(m>=x.min)l=x});return l}
+function nextLeague(m){var i=LEAGUES.indexOf(league(m));return LEAGUES[i+1]||null}
+function pctTo(m){var l=league(m),n=nextLeague(m);return n?Math.max(0,Math.min(100,Math.round((m-l.min)/(n.min-l.min)*100))):100}
+function gradeEq(m){var g=1.5+(m-800)/200;return Math.max(1,Math.min(8,g)).toFixed(1)}
+function stars(c,n){var p=c/n;return p>=.9?3:p>=.7?2:p>=.5?1:0}
+function starStr(k){return '⭐'.repeat(k)+'☆'.repeat(3-k)}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function fmtDate(t){var d=new Date(t);return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+' '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}
+function pill(d){return '<span class="pill '+d+'">'+d[0].toUpperCase()+d.slice(1)+'</span>'}
+function storiesOf(c){return STORIES.filter(function(s){return s.cat===c})}
+function doneCount(c){return storiesOf(c).filter(function(s){return P.done[s.id]}).length}
+
+function go(screen,x){S.screen=screen;S.armed=false;S.msg='';if(x)for(var k in x)S[k]=x[k];render()}
+
+// ---------- matchmaking: suggest a story close to your level ----------
+function pick(){
+  var pool=STORIES.filter(function(s){return !P.done[s.id]});
+  if(!pool.length)pool=STORIES.slice().sort(function(a,b){return ((P.done[a.id]||{}).bestPct||0)-((P.done[b.id]||{}).bestPct||0)}).slice(0,5);
+  var target=P.mmr+100;
+  pool.sort(function(a,b){return Math.abs(a.rating-target)-Math.abs(b.rating-target)});
+  var best=pool.filter(function(s){return Math.abs(s.rating-pool[0].rating)<1});
+  return best[Math.floor(Math.random()*best.length)];
+}
+
+// ---------- quiz flow ----------
+function startRead(id){go('read',{sid:id})}
+function startQuiz(){
+  var st=story(S.sid);
+  S.qs=st.q.map(function(q){
+    var idx=shuffle(q.o.map(function(_,i){return i}));
+    return {q:q.q,o:idx.map(function(i){return q.o[i]}),a:idx.indexOf(q.a)};
+  });
+  S.ans=[];S.qi=0;go('quiz');
+}
+function choose(i){if(S.ans[S.qi]!==undefined)return;S.ans[S.qi]=i;render(true)}
+function nextQ(){if(S.qi+1<S.qs.length){S.qi++;render()}else finish()}
+
+function finish(){
+  var st=story(S.sid),n=S.qs.length,c=0,wrong=[];
+  S.qs.forEach(function(q,i){if(S.ans[i]===q.a)c++;else wrong.push({q:q.q,a:q.o[q.a]})});
+  var d=P.done[st.id]||{n:0,best:0,bestPct:0};
+  var K=P.games<PLACEMENT?64:(d.n===0?48:24);
+  var s=c/n,E=1/(1+Math.pow(10,(st.rating-P.mmr)/400));
+  var delta=Math.round(K*(s-E)),bonus=0;
+  if(c===n){P.streak++;if(P.streak>=2){bonus=Math.min(3,P.streak-1)*3;delta+=bonus}}else P.streak=0;
+  var before=P.mmr,lb=league(before),wasPlacement=P.games<PLACEMENT;
+  P.mmr=Math.max(0,before+delta);delta=P.mmr-before;
+  P.games++;P.best=Math.max(P.best,P.mmr);
+  d.n++;d.best=Math.max(d.best,c);d.bestPct=Math.max(d.bestPct||0,Math.round(c/n*100));P.done[st.id]=d;
+  P.hist.unshift({t:Date.now(),id:st.id,title:st.title,cat:st.cat,c:c,n:n,d:delta,m:P.mmr});
+  save();
+  var la=league(P.mmr);
+  S.res={c:c,n:n,delta:delta,bonus:bonus,before:before,after:P.mmr,lb:lb,la:la,
+    promoted:LEAGUES.indexOf(la)>LEAGUES.indexOf(lb),demoted:LEAGUES.indexOf(la)<LEAGUES.indexOf(lb),
+    placement:wasPlacement,gamesLeft:Math.max(0,PLACEMENT-P.games),wrong:wrong,streak:P.streak};
+  go('result');
+}
+
+// ---------- settings / backup ----------
+function setName(v){P.name=(v||'Reader').slice(0,20);save()}
+function setFs(dx){P.fs=Math.max(17,Math.min(32,P.fs+dx));save();render(true)}
+function exportJSON(){return JSON.stringify(P)}
+function copyBackup(){
+  var t=$('bk');t.focus();t.select();t.setSelectionRange(0,999999);
+  var ok=false;try{ok=document.execCommand('copy')}catch(e){}
+  if(!ok&&navigator.clipboard){navigator.clipboard.writeText(t.value);ok=true}
+  S.msg=ok?'Copied! 已复制':'Select the text and copy it manually';render(true)
+}
+function downloadBackup(){
+  var b=new Blob([exportJSON()],{type:'application/json'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='star-reading-backup.json';document.body.appendChild(a);a.click();a.remove();
+}
+function importBackup(){
+  try{
+    var o=JSON.parse($('imp').value.trim());
+    if(typeof o.mmr!=='number'||!Array.isArray(o.hist))throw 0;
+    var d=defaults();for(var k in o)d[k]=o[k];P=d;save();S.msg='Loaded! 导入成功';
+  }catch(e){S.msg='That does not look like a backup. 备份格式不对'}
+  render(true)
+}
+function resetAll(){
+  if(!S.armed){S.armed=true;render(true);return}
+  P=defaults();save();go('home');
+}
+
+// ---------- screens ----------
+function ladderCard(){
+  var L=league(P.mmr),N=nextLeague(P.mmr),pc=pctTo(P.mmr),pl=P.games<PLACEMENT;
+  return '<div class="rank league-'+L.k+'"><div class="row"><div class="badge">'+L.ic+'</div><div class="grow">'+
+   '<div class="big">'+L.n+' '+L.zh+'</div>'+
+   '<div>'+esc(P.name)+' · MMR <b>'+P.mmr+'</b> · Reading level ≈ Grade '+gradeEq(P.mmr)+'</div></div></div>'+
+   (pl?'<div style="margin-top:10px;font-weight:700">🎯 Placement matches '+P.games+' / '+PLACEMENT+' · 定级赛</div>':'')+
+   (N?'<div class="bar"><i style="width:'+pc+'%"></i></div><div class="sub" style="color:#fff;opacity:.85;margin-top:4px">'+(N.min-P.mmr)+' MMR to '+N.ic+' '+N.n+' '+N.zh+'</div>'
+     :'<div style="margin-top:10px;font-weight:800">🏆 Top league reached! 已达宗师!</div>')+
+   (P.streak>=2?'<div style="margin-top:8px;font-weight:700">🔥 Perfect streak x'+P.streak+'</div>':'')+
+  '</div>';
+}
+
+function homeScreen(){
+  var rec=pick(),h='';
+  h+='<div class="top"><div><h1>⭐ STAR Reading Ladder</h1><div class="sub">星际阅读天梯 · Read, answer, climb the ladder</div></div>'+
+     '<div class="row"><button class="iconbtn" onclick="go(\'history\')" aria-label="History">📊</button><button class="iconbtn" onclick="go(\'settings\')" aria-label="Settings">⚙️</button></div></div>';
+  if(!storageOK)h+='<div class="card" style="border-color:#f59e0b">⚠️ This browser is not saving progress. Open the file in Safari (not a preview), or use ⚙️ → Backup after each session.</div>';
+  h+=ladderCard();
+  h+='<button class="big-btn green" onclick="startRead(\''+rec.id+'\')">⚔️ Find a Match · 匹配文章<br><span style="font-size:15px;font-weight:600">'+rec.em+' '+esc(rec.title)+'</span></button>';
+  h+='<h2 style="margin:22px 0 12px;font-size:20px">📚 Choose a category · 选择主题</h2>';
+  CATS.forEach(function(c){
+    h+='<button class="cat '+c.cls+'" onclick="go(\'cat\',{cat:\''+c.id+'\'})"><span class="em">'+c.em+'</span><span><div class="t">'+c.n+'</div><div class="z">'+c.zh+'</div></span>'+
+       '<span class="n">'+doneCount(c.id)+'/'+storiesOf(c.id).length+'<div class="z">done</div></span></button>';
+  });
+  if(P.hist.length){
+    h+='<h2 style="margin:22px 0 12px;font-size:20px">🕑 Recent matches · 最近战绩</h2>';
+    P.hist.slice(0,3).forEach(function(x){h+=histRow(x)});
+  }
+  return h;
+}
+
+function histRow(x){
+  var st=story(x.id);
+  return '<div class="hist"><span style="font-size:30px">'+(st?st.em:'📖')+'</span><div class="grow"><div style="font-weight:700">'+esc(x.title)+'</div>'+
+   '<div class="sub">'+starStr(stars(x.c,x.n))+' '+x.c+'/'+x.n+' · '+fmtDate(x.t)+'</div></div>'+
+   '<div style="text-align:right"><div class="delta '+(x.d>=0?'up':'dn')+'">'+(x.d>=0?'+':'')+x.d+'</div><div class="sub">MMR '+x.m+'</div></div></div>';
+}
+
+function catScreen(){
+  var c=cat(S.cat),h='';
+  h+='<button class="back" onclick="go(\'home\')">‹ Back 返回</button>';
+  h+='<div class="rank '+c.cls+'"><div class="row"><div class="badge">'+c.em+'</div><div><div class="big">'+c.n+'</div><div>'+c.zh+'</div></div></div></div>';
+  storiesOf(c.id).forEach(function(s){
+    var d=P.done[s.id];
+    h+='<button class="story'+(d?' done':'')+'" onclick="startRead(\''+s.id+'\')"><span class="em">'+s.em+'</span><span class="grow"><div class="t">'+esc(s.title)+'</div>'+
+       '<div>'+pill(s.diff)+'<span class="pill g">Lv '+s.rating+'</span><span class="pill g">'+s.q.length+' questions</span></div>'+
+       '<div class="sub" style="margin-top:4px">'+(d?('✅ Best '+d.best+'/'+s.q.length+' · played '+d.n+'×'):'Not played yet · 还没读过')+'</div></span><span class="sub">›</span></button>';
+  });
+  return h;
+}
+
+function passageHTML(st){
+  return st.passage.split('\n\n').map(function(p){
+    return '<p'+(p.indexOf('三十六计')===0?' class="stz"':'')+'>'+esc(p)+'</p>';
+  }).join('');
+}
+
+function readScreen(){
+  var st=story(S.sid),c=cat(st.cat),h='';
+  h+='<button class="back" onclick="go(\'cat\',{cat:\''+st.cat+'\'})">‹ Back 返回</button>';
+  h+='<div class="top"><div class="row"><span style="font-size:40px">'+st.em+'</span><div><h2 style="font-size:23px">'+esc(st.title)+'</h2><div>'+pill(st.diff)+'<span class="pill g">Lv '+st.rating+'</span></div></div></div>'+
+     '<div class="row"><button class="iconbtn" onclick="setFs(-2)">A−</button><button class="iconbtn" onclick="setFs(2)">A+</button></div></div>';
+  h+='<div class="passage" style="font-size:'+P.fs+'px">'+passageHTML(st)+'</div><div class="stickybar"><button class="big-btn" onclick="startQuiz()">✏️ I\'m ready! Start Quiz · 开始答题</button></div>';
+  return h;
+}
+
+function quizScreen(){
+  var st=story(S.sid),q=S.qs[S.qi],ans=S.ans[S.qi],done=ans!==undefined,h='';
+  var c=0,w=0;
+  S.qs.forEach(function(x,i){if(S.ans[i]!==undefined){if(S.ans[i]===x.a)c++;else w++}});
+  var answered=c+w;
+  // live score bar: correct / wrong / accuracy + one dot per question
+  h+='<div class="qhead"><div class="row"><div class="grow sub">'+st.em+' '+esc(st.title)+' · Question '+(S.qi+1)+' of '+S.qs.length+'</div>'+
+     '<div class="score"><span class="sc ok">✅ '+c+'</span><span class="sc bad">❌ '+w+'</span><span class="sc">'+(answered?Math.round(c/answered*100)+'%':'–')+'</span></div></div>'+
+     '<div class="dots">'+S.qs.map(function(x,i){
+        var a=S.ans[i],k=a===undefined?(i===S.qi?'cur':''):(a===x.a?'ok':'bad');
+        return '<i class="'+k+'">'+(a===undefined?(i+1):(a===x.a?'✓':'✗'))+'</i>';
+     }).join('')+'</div></div>';
+  h+='<div class="split">';
+  // left: the story stays visible during the quiz
+  h+='<div class="pane" id="pl"><div class="paneh"><b>📖 Story · 原文</b><span class="row"><button class="iconbtn sm" onclick="setFs(-2)">A−</button><button class="iconbtn sm" onclick="setFs(2)">A+</button></span></div>'+
+     '<div class="passage" style="font-size:'+Math.max(16,P.fs-3)+'px">'+passageHTML(st)+'</div></div>';
+  // right: question and answers
+  h+='<div class="pane" id="pr"><div class="card"><div class="qbox">'+esc(q.q)+'</div></div>';
+  q.o.forEach(function(o,i){
+    var cls='opt';
+    if(done){if(i===q.a)cls+=' ok';else if(i===ans)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" '+(done?'':'onclick="choose('+i+')"')+'><span class="L">'+'ABCD'[i]+'</span><span>'+esc(o)+'</span>'+
+       (done&&i===q.a?'<span style="margin-left:auto">✅</span>':'')+(done&&i===ans&&i!==q.a?'<span style="margin-left:auto">❌</span>':'')+'</button>';
+  });
+  if(done){
+    h+='<div class="fb '+(ans===q.a?'ok':'bad')+'">'+(ans===q.a?'✅ Correct! 答对了！':'❌ Not quite. The answer is: '+esc(q.o[q.a]))+'</div>';
+    h+='<div class="stickybar"><button class="big-btn" onclick="nextQ()">'+(S.qi+1<S.qs.length?'Next 下一题 ›':'See Results 查看成绩 🏆')+'</button></div>';
+  }
+  h+='</div></div>';
+  return h;
+}
+
+function resultScreen(){
+  var r=S.res,st=story(S.sid),k=stars(r.c,r.n),h='';
+  var msg=[['Keep practicing! 继续练习!','Read it again and try once more.'],['Good try! 不错!','You are getting closer.'],['Great job! 做得好!','Nice reading.'],['Outstanding! 太棒了!','Perfect reading!']][k===3&&r.c===r.n?3:k];
+  h+='<div class="center"><div style="font-size:70px" class="pop">'+(r.c===r.n?'🏆':k>=2?'🥈':k>=1?'🥉':'📖')+'</div>'+
+     '<div style="font-size:44px;font-weight:900">'+r.c+' / '+r.n+'</div><div style="font-size:26px">'+starStr(k)+'</div>'+
+     '<div style="font-weight:800;font-size:22px;margin-top:6px">'+msg[0]+'</div><div class="sub">'+msg[1]+'</div></div>';
+  if(r.promoted)h+='<div class="rank league-'+r.la.k+' center pop" style="margin-top:16px"><div class="badge">'+r.la.ic+'</div><div class="big">PROMOTED! 晋级 '+r.la.n+' '+r.la.zh+'</div></div>';
+  if(r.demoted)h+='<div class="card center" style="margin-top:16px">Dropped to '+r.la.ic+' '+r.la.n+' '+r.la.zh+'. Win it back! 加油夺回!</div>';
+  h+='<div class="stats" style="margin-top:16px"><div class="stat"><b class="delta '+(r.delta>=0?'up':'dn')+'">'+(r.delta>=0?'+':'')+r.delta+'</b><span class="sub">MMR change</span></div>'+
+     '<div class="stat"><b>'+r.after+'</b><span class="sub">MMR now</span></div>'+
+     '<div class="stat"><b>'+r.la.ic+'</b><span class="sub">'+r.la.n+'</span></div></div>';
+  if(r.bonus)h+='<div class="card">🔥 Perfect streak bonus +'+r.bonus+'</div>';
+  if(r.placement)h+='<div class="card">🎯 Placement match'+(r.gamesLeft?' · '+r.gamesLeft+' more to go':' complete! You are placed in '+r.la.ic+' '+r.la.n+'.')+'</div>';
+  if(r.wrong.length){
+    h+='<div class="card"><h3 style="margin-bottom:8px">Review · 错题回顾</h3>';
+    r.wrong.forEach(function(w){h+='<div style="margin-bottom:10px"><div>❌ '+esc(w.q)+'</div><div class="sub">Answer: '+esc(w.a)+'</div></div>'});
+    h+='</div>';
+  }
+  h+='<button class="big-btn" onclick="startRead(\''+st.id+'\')">🔁 Read again · 再读一次</button>'+
+     '<button class="big-btn sec" style="margin-top:10px" onclick="startRead(pick().id)">⚔️ Next match · 下一场</button>'+
+     '<button class="big-btn sec" style="margin-top:10px" onclick="go(\'home\')">🏠 Home 首页</button>';
+  return h;
+}
+
+function spark(){
+  var pts=[800].concat(P.hist.slice(0,40).map(function(x){return x.m}).reverse());
+  if(pts.length<2)return '';
+  var mn=Math.min.apply(null,pts)-20,mx=Math.max.apply(null,pts)+20,W=300,H=80;
+  var d=pts.map(function(v,i){return (i/(pts.length-1)*W).toFixed(1)+','+(H-(v-mn)/(mx-mn)*H).toFixed(1)}).join(' ');
+  return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:90px"><polyline fill="none" stroke="#4f8cff" stroke-width="3" stroke-linejoin="round" points="'+d+'"/></svg>';
+}
+
+function historyScreen(){
+  var h='<button class="back" onclick="go(\'home\')">‹ Back 返回</button><h1 style="margin-bottom:12px">📊 Match History · 战绩</h1>';
+  h+=ladderCard();
+  var tc=0,tn=0;P.hist.forEach(function(x){tc+=x.c;tn+=x.n});
+  h+='<div class="stats"><div class="stat"><b>'+P.hist.length+'</b><span class="sub">Matches</span></div><div class="stat"><b>'+(tn?Math.round(tc/tn*100):0)+'%</b><span class="sub">Accuracy</span></div><div class="stat"><b>'+P.best+'</b><span class="sub">Peak MMR</span></div></div>';
+  h+='<div class="card"><h3>MMR over time · 天梯曲线</h3>'+(P.hist.length?spark():'<div class="sub">Play a match to see your curve.</div>')+'</div>';
+  h+='<div class="card"><h3 style="margin-bottom:8px">By category · 分类正确率</h3>';
+  CATS.forEach(function(c){
+    var a=0,b=0;P.hist.forEach(function(x){if(x.cat===c.id){a+=x.c;b+=x.n}});
+    var p=b?Math.round(a/b*100):0;
+    h+='<div class="row" style="margin-bottom:8px"><span style="width:30px;font-size:24px">'+c.em+'</span><div class="grow"><div>'+c.n+' <span class="sub">'+c.zh+'</span></div><div class="prog" style="margin:4px 0"><i style="width:'+p+'%"></i></div></div><b>'+(b?p+'%':'–')+'</b></div>';
+  });
+  h+='</div><h3 style="margin:16px 0 10px">All matches · 全部记录</h3>';
+  if(!P.hist.length)h+='<div class="sub">No matches yet. 还没有记录。</div>';
+  P.hist.forEach(function(x){h+=histRow(x)});
+  return h;
+}
+
+function settingsScreen(){
+  var h='<button class="back" onclick="go(\'home\')">‹ Back 返回</button><h1 style="margin-bottom:12px">⚙️ Settings · 设置</h1>';
+  if(S.msg)h+='<div class="card" style="border-color:#34d399">'+esc(S.msg)+'</div>';
+  h+='<div class="card"><h3 style="margin-bottom:8px">Player name · 名字</h3><input class="name" value="'+esc(P.name)+'" oninput="setName(this.value)"></div>';
+  h+='<div class="card"><h3 style="margin-bottom:6px">💾 Backup · 备份</h3><div class="sub" style="margin-bottom:8px">Progress lives in this browser. Save a backup now and then (Notes, Google Drive, email) so it is never lost.</div>'+
+     '<textarea id="bk" readonly>'+esc(exportJSON())+'</textarea>'+
+     '<div class="row" style="margin-top:10px"><button class="big-btn sec" onclick="copyBackup()">📋 Copy</button><button class="big-btn sec" onclick="downloadBackup()">⬇️ Download</button></div></div>';
+  h+='<div class="card"><h3 style="margin-bottom:6px">📥 Restore · 导入备份</h3><textarea id="imp" placeholder="Paste backup here"></textarea>'+
+     '<button class="big-btn sec" style="margin-top:10px" onclick="importBackup()">Load backup</button></div>';
+  h+='<div class="card"><h3 style="margin-bottom:8px">🗑 Reset ladder · 重置</h3><button class="big-btn" style="background:#b91c1c" onclick="resetAll()">'+(S.armed?'Tap again to erase everything 再点一次确认':'Reset all progress')+'</button></div>';
+  h+='<div class="sub center" style="margin-top:14px">Reading level is a fun estimate, not an official STAR Reading score.</div>';
+  return h;
+}
+
+var lastScreen='';
+function render(keep){
+  var f={home:homeScreen,cat:catScreen,read:readScreen,quiz:quizScreen,result:resultScreen,history:historyScreen,settings:settingsScreen}[S.screen]||homeScreen;
+  var pl=$('pl'),pr=$('pr'),sl=pl?pl.scrollTop:0,sr=pr?pr.scrollTop:0,wasQuiz=lastScreen==='quiz';
+  $('app').className=S.screen==='quiz'?'wide':'';
+  $('app').innerHTML=f();
+  if(S.screen==='quiz'&&wasQuiz){
+    if($('pl'))$('pl').scrollTop=sl;
+    if(keep&&$('pr'))$('pr').scrollTop=sr;
+  }else if(!keep)window.scrollTo(0,0);
+  lastScreen=S.screen;
+}
+render();
+</script>
+</body>
+</html>
